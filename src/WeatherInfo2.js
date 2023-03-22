@@ -1,28 +1,42 @@
-import { SafeAreaView, StyleSheet, Text, View, Image, TextInput } from 'react-native'
-import React, {useState} from 'react'
+import { SafeAreaView, StyleSheet, Text, View, Image, TextInput, ScrollView, Pressable } from 'react-native'
+import React, {useState, useEffect} from 'react'
 import { AntDesign } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
 import { Dimensions } from 'react-native';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { ImageBackground } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-const WeatherInfo2 = ({weatherData2, fetchWeatherData2}) => {
+const WeatherInfo2 = ({weatherData, fetchWeatherData2}) => {
     const {
         name,
-        main: {temp, feels_like},
-        weather: [{icon,main}]
-    } = weatherData2
-    const [NameCity, SetCityName] = useState('');
+        main: {temp, feels_like,temp_min, temp_max, humidity},
+        weather: [{icon,main}],
+        sys:{sunrise,sunset},
+        wind: {speed},
+    } = weatherData
+
+        const [cityName, setCityName] = useState('');
 
   return (
-    <View style={styles.container} >
+<View style={styles.container}>
     <View style={styles.container1}>
         <TextInput style={styles.Search}
         placeholder='City Name'
-        value={NameCity}
-        onChangeText={(text) => SetCityName(text)}
+        placeholderTextColor= '#FFFFFF'
+        value={cityName}
+        onChangeText={(text) => setCityName(text)}
     />
-        <EvilIcons style={styles.Search2} name="search" size={30} color="black" 
-        onPress={() => fetchWeatherData2(NameCity)}
+        <EvilIcons style={styles.Search2} name="search" size={29} color="black" 
+        onPress={() => {
+            if(cityName) {
+                fetchWeatherData2(cityName);
+            }
+            else{
+                alert("Please enter a city name");
+            }
+        }}
     />
     </View>
     <View style={styles.container2}>
@@ -31,9 +45,55 @@ const WeatherInfo2 = ({weatherData2, fetchWeatherData2}) => {
     </View>
     <View style={styles.container3}>
         <Text style={styles.cityName}>{name}</Text>
-        <AntDesign style={styles.Icon} name="enviromento" size={24} color="black" />
+        <AntDesign style={styles.Icon1} name="enviromento" size={24} color="black" />
     </View>
 
+    
+    <View style={styles.extraInfo}>
+        <View style={styles.info}>
+            <Feather style={styles.Icon2} name="sunrise" size={30} color="black" />
+            <Text style={styles.infoText2}>Sunrise</Text>
+            <Text style={styles.infoText}>{new Date(sunrise*1000).toLocaleTimeString()}</Text>
+        </View>
+        <View style={styles.info}>
+            <Feather style={styles.Icon2} name="sunset" size={30} color="black" />
+            <Text style={styles.infoText2}>Sunset</Text>
+            <Text style={styles.infoText}>{new Date(sunset*1000).toLocaleTimeString()}</Text>
+        </View>
+        <View style={styles.info}>
+            <Feather style={styles.Icon2} name="wind" size={30} color="black" />
+            <Text style={styles.infoText2}>Wind</Text>
+            <Text style={styles.infoText}>{Math.round(speed)} m/s</Text>
+        </View>
+    </View>
+    <View style={styles.extraInfo}>
+        <View style={styles.info}>
+            <FontAwesome5 style={styles.Icon2} name="temperature-high" size={30} color="black" />
+            <Text style={styles.infoText2}>Temp-Max</Text>
+            <Text style={styles.infoText}>{Math.round(temp_max)}°</Text>
+        </View>
+
+        <View style={styles.info}>
+            <FontAwesome5 style={styles.Icon2} name="temperature-low" size={30} color="black" />
+            <Text style={styles.infoText2}>Temp-Min</Text>
+            <Text style={styles.infoText}>{Math.round(temp_min)}°</Text>
+        </View>
+
+        <View style={styles.info}>
+            <Ionicons style={styles.Icon2} name="water" size={30} color="black" />
+            <Text style={styles.infoText2}>Humidity</Text>
+            <Text style={styles.infoText}>{Math.round(humidity)}%</Text>
+        </View>
+    </View>
+
+
+    {(() => {
+          if (temp <=5) return <Text style={styles.Suggestion}>Looks Cold Wear a Coat</Text>;
+          if (temp <=15) return <Text style={styles.Suggestion}>A Bit Chilly Wear A Sweater</Text>;
+          if (temp >=17) return <Text style={styles.Suggestion}>A bit Warm Wear a shirt</Text>;
+          if (temp >=26) return <Text style={styles.Suggestion}> Quite Warm Wear a shirt and make sure to bring some water</Text>;
+        })()}
+  
    </View>
   )
 }
@@ -45,38 +105,52 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     container1: {
+        height: 50,
+        margin: 12,
+        borderWidth: 1,
+        padding: 10,
         flexDirection: 'row',
-        alignItems: 'center',
+        marginTop: 30,
+        borderRadius: 20,
+        borderColor: '#FFFFFF',
         justifyContent: 'space-between',
-        marginTop: 50,
 
+        
     },
     Search:{
-        fontSize: 24,
-        marginTop: 20,
-        top: 20,
-        flexDirection: 'row',
-        color: '#FFFFFF'
+        fontSize: 20,
     },
     Search2:{
+        size: 32,
         flexDirection: 'row',
-        marginTop: 20,
-        top: 20,
+        color: '#FFFFFF',
     },
     container2:{
-        marginTop: 30,
+        marginTop: 10,
         alignItems: 'center', 
         justifyContent: 'center',
         textAlign: 'center',
+        
     },
     container3:{
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
+        
     },
+    container4:{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        color: '#FFFFFF',
+        marginTop: 50,
+        right: 100,
+    },
+   
     Temperature: {
-        fontSize: 90,
+        fontSize: 100,
         color: '#FFFFFF'
     },
     cityName:{
@@ -87,5 +161,43 @@ const styles = StyleSheet.create({
         fontSize: 45,
         color: '#FFFFFF'
     },
+    Icon1:{
+        color: '#FFFFFF',
+        marginLeft: 10,
+    },
+    Icon2: {
+        marginLeft: 10,
+        color: '#FFFFFF',
+        marginLeft: 55,
+    },
+    extraInfo: {
+        flexDirection: 'row',
+        padding: 7,
+        justifyContent: 'space-around',
+        marginTop: 20,
 
+    },
+    info:{
+        marginTop: 20,
+        width: Dimensions.get('screen').width/2.5,
+        //backgroundColor:'#000000',
+        padding: 10,
+        borderRadius: 20,
+       
+    },
+    infoText: {
+        color: '#FFFFFF',
+        fontSize: 20,
+        textAlign: 'center',
+    },
+    infoText2: {
+        color: '#FFFFFF',
+        fontSize: 20,
+        textAlign: 'center',
+    },
+    Suggestion: {
+        color: '#FFFFFF',
+        fontSize: 20,
+        textAlign: 'center',
+    },
 })

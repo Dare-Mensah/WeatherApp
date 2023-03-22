@@ -1,5 +1,5 @@
-import { SafeAreaView, StyleSheet, Text, View, Image, TextInput } from 'react-native'
-import React, {useState} from 'react'
+import { SafeAreaView, StyleSheet, Text, View, Image, TextInput, ScrollView } from 'react-native'
+import React, {useState, useEffect} from 'react'
 import { AntDesign } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
 import { Dimensions } from 'react-native';
@@ -11,7 +11,7 @@ import WeatherInfo2 from './WeatherInfo2';
 
 
 const WeatherInfo = ({weatherData, fetchWeatherData }) => {
-    const Data ={
+    const {
         name,
         main: {temp, feels_like,temp_min, temp_max, humidity},
         weather: [{icon,main}],
@@ -24,7 +24,7 @@ const WeatherInfo = ({weatherData, fetchWeatherData }) => {
   return (
 
     
-    <View style={styles.container}>
+<View style={styles.container}>
     <View style={styles.container1}>
         <TextInput style={styles.Search}
         placeholder='City Name'
@@ -33,7 +33,14 @@ const WeatherInfo = ({weatherData, fetchWeatherData }) => {
         onChangeText={(text) => setCityName(text)}
     />
         <EvilIcons style={styles.Search2} name="search" size={29} color="black" 
-        onPress={() => fetchWeatherData(cityName)}
+        onPress={() => {
+            if(cityName) {
+                fetchWeatherData(cityName);
+            }
+            else{
+                alert("Please enter a city name");
+            }
+        }}
     />
     </View>
     <View style={styles.container2}>
@@ -44,6 +51,8 @@ const WeatherInfo = ({weatherData, fetchWeatherData }) => {
         <Text style={styles.cityName}>{name}</Text>
         <AntDesign style={styles.Icon1} name="enviromento" size={24} color="black" />
     </View>
+
+    
     <View style={styles.extraInfo}>
         <View style={styles.info}>
             <Feather style={styles.Icon2} name="sunrise" size={30} color="black" />
@@ -81,11 +90,18 @@ const WeatherInfo = ({weatherData, fetchWeatherData }) => {
         </View>
     </View>
 
-    
+    <View>
+    <Text style={styles.Suggestion}>Clothing Suggestion </Text>
+    </View>
 
+    {(() => {
+          if (temp <=5) return <Text style={styles.Suggestion}>Looks Cold Wear a Coat</Text>;
+          if (temp <=10) return <Text style={styles.Suggestion}>A Bit Chilly Wear A Sweater</Text>;
+          if (temp >=17) return <Text style={styles.Suggestion}>A bit Warm Wear a shirt</Text>;
+          if (temp >=26) return <Text style={styles.Suggestion}> Quite Warm Wear a shirt and make sure to bring some water</Text>;
+        })()}
 
-
-
+   
    </View>
   )
 }
@@ -105,6 +121,7 @@ const styles = StyleSheet.create({
         marginTop: 80,
         borderRadius: 20,
         borderColor: '#FFFFFF',
+        justifyContent: 'space-between',
 
         
     },
@@ -113,7 +130,6 @@ const styles = StyleSheet.create({
     },
     Search2:{
         size: 32,
-        left: 220,
         flexDirection: 'row',
         color: '#FFFFFF',
     },
@@ -186,6 +202,17 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 20,
         textAlign: 'center',
+    },
+    Suggestion: {
+        color: '#FFFFFF',
+        fontSize: 20,
+        textAlign: 'center',
+    },
+    Suggestion2: {
+        color: '#FFFFFF',
+        fontSize: 20,
+        textAlign: 'center',
+        flexDirection: 'row',
     },
 
 
